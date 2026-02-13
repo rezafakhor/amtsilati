@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, Package, Truck, CheckCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Eye, Package, CheckCircle, Download, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import OrderDetailModal from "@/components/admin/OrderDetailModal";
+import * as XLSX from 'xlsx';
 
 interface Order {
   id: string;
@@ -26,7 +26,9 @@ export default function PesananPage() {
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ id: string; action: string } | null>(null);
-  const router = useRouter();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [exporting, setExporting] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -114,6 +116,74 @@ export default function PesananPage() {
     return null;
   };
 
+  const handleExportExcel = async () => {
+    if (!startDate || !endDate) {
+      showToast("Pilih rentang tanggal terlebih dahulu", "error");
+      return;
+    }
+
+    setExporting(true);
+    try {
+      const params = new URLSearchParams({
+        startDate,
+        endDate,
+      });
+
+      const res = await fetch(`/api/orders/export?${params}`);
+      if (!res.ok) throw new Error("Export failed");
+
+      const data = await res.json();
+
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+
+      // Set column widths
+      const colWidths = [
+        { wch: 15 }, // No. Order
+        { wch: 18 }, // Tanggal
+        { wch: 20 }, // Customer
+        { wch: 25 }, // Email
+        { wch: 25 }, // Pesantren
+        { wch: 30 }, // Nama Item
+        { wch: 8 },  // Qty
+        { wch: 15 }, // Harga Satuan
+        { wch: 15 }, // Subtotal Item
+        { wch: 15 }, // Subtotal Order
+        { wch: 12 }, // Diskon
+        { wch: 15 }, // Total Order
+        { wch: 12 }, // Metode Bayar
+        { wch: 12 }, // Status Bayar
+        { wch: 15 }, // Dibayar
+        { wch: 15 }, // Sisa Hutang
+        { wch: 12 }, // Status Order
+        { wch: 15 }, // Kode Promo
+        { wch: 40 }, // Alamat Kirim
+        { wch: 20 }, // Penerima
+        { wch: 15 }, // No. HP
+        { wch: 12 }, // Metode Kirim
+        { wch: 20 }, // No. Resi
+      ];
+      ws['!cols'] = colWidths;
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Penjualan");
+
+      // Generate filename with date range
+      const filename = `Penjualan_${startDate}_${endDate}.xlsx`;
+
+      // Download file
+      XLSX.writeFile(wb, filename);
+
+      showToast("Data berhasil diexport", "success");
+    } catch (error) {
+      console.error("Error exporting:", error);
+      showToast("Gagal export data", "error");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-12">Memuat...</div>;
   }
@@ -124,6 +194,46 @@ export default function PesananPage() {
       <div>
         <h1 className="text-[32px] font-serif font-semibold text-[#1c1c1c] mb-1">Pesanan</h1>
         <p className="text-sm text-[#6a6a6a]">Kelola pesanan dan pengiriman</p>
+      </div>
+
+      {/* Export Section */}
+      <div className="bg-white rounded-[18px] shadow-[0_6px_20px_rgba(0,0,0,0.05)] border border-[#eceae7] p-6">
+        <div className="flex flex-col md:flex-row md:items-end gap-4">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-[#1c1c1c] mb-2">
+                <Calendar className="w-4 h-4 inline mr-1.5" />
+                Tanggal Mulai
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#eceae7] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0f3d2e]/20 focus:border-[#0f3d2e] transition-all text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#1c1c1c] mb-2">
+                <Calendar className="w-4 h-4 inline mr-1.5" />
+                Tanggal Akhir
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#eceae7] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0f3d2e]/20 focus:border-[#0f3d2e] transition-all text-sm"
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleExportExcel}
+            disabled={!startDate || !endDate || exporting}
+            className="px-6 py-2.5 bg-[#0f3d2e] text-white rounded-[12px] hover:bg-[#145c43] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 font-medium text-sm"
+          >
+            <Download className="w-4 h-4" />
+            {exporting ? "Mengexport..." : "Export Excel"}
+          </button>
+        </div>
       </div>
 
       {/* Desktop: Table View */}

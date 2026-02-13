@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Address {
+model address {
   id            String   @id
   userId        String
   label         String
@@ -21,7 +21,7 @@ model Address {
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Address_userId_fkey")
+  user          user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Address_userId_fkey")
 
   @@index([userId], map: "Address_userId_idx")
   @@map("Address")
@@ -35,7 +35,7 @@ model debt {
   remainingDebt Decimal       @db.Decimal(10, 2)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime
-  user          User          @relation(fields: [userId], references: [id], map: "Debt_userId_fkey")
+  user          user          @relation(fields: [userId], references: [id], map: "Debt_userId_fkey")
   debtpayment   debtpayment[]
 
   @@index([userId], map: "Debt_userId_idx")
@@ -50,7 +50,7 @@ model debtpayment {
   notes        String?  @db.Text
   createdAt    DateTime @default(now())
   debt         debt     @relation(fields: [debtId], references: [id], map: "DebtPayment_debtId_fkey")
-  user         User     @relation(fields: [userId], references: [id], map: "DebtPayment_userId_fkey")
+  user         user     @relation(fields: [userId], references: [id], map: "DebtPayment_userId_fkey")
 
   @@index([debtId], map: "DebtPayment_debtId_idx")
   @@index([userId], map: "DebtPayment_userId_idx")
@@ -84,7 +84,7 @@ model order {
   createdAt        DateTime            @default(now())
   updatedAt        DateTime
   promo            promo?              @relation(fields: [promoId], references: [id], map: "Order_promoId_fkey")
-  user             User                @relation(fields: [userId], references: [id], map: "Order_userId_fkey")
+  user             user                @relation(fields: [userId], references: [id], map: "Order_userId_fkey")
   orderitem        orderitem[]
 
   @@index([promoId], map: "Order_promoId_idx")
@@ -180,7 +180,7 @@ model stocklog {
   @@index([productId], map: "StockLog_productId_idx")
 }
 
-model User {
+model user {
   id            String        @id
   email         String        @unique(map: "User_email_key")
   password      String
@@ -194,7 +194,7 @@ model User {
   postalCode    String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime
-  addresses          Address[]
+  addresses          address[]
   debt               debt[]
   debtpayment        debtpayment[]
   order              order[]
@@ -280,7 +280,7 @@ model diklatregistration {
   status    diklatregistration_status   @default(PENDING)
   createdAt DateTime                    @default(now())
   diklat    diklat                      @relation(fields: [diklatId], references: [id], onDelete: Cascade)
-  user      User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      user?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([diklatId], map: "DiklatRegistration_diklatId_idx")
   @@index([userId], map: "DiklatRegistration_userId_idx")

@@ -1,0 +1,346 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id            String   @id
+  userId        String
+  label         String
+  recipientName String
+  pesantrenName String?
+  phone         String
+  address       String   @db.Text
+  city          String
+  province      String
+  postalCode    String?
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Address_userId_fkey")
+
+  @@index([userId], map: "Address_userId_idx")
+  @@map("Address")
+}
+
+model debt {
+  id            String        @id
+  userId        String
+  totalDebt     Decimal       @db.Decimal(10, 2)
+  paidAmount    Decimal       @default(0.00) @db.Decimal(10, 2)
+  remainingDebt Decimal       @db.Decimal(10, 2)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  user          User          @relation(fields: [userId], references: [id], map: "Debt_userId_fkey")
+  debtpayment   debtpayment[]
+
+  @@index([userId], map: "Debt_userId_idx")
+}
+
+model debtpayment {
+  id           String   @id
+  debtId       String
+  userId       String
+  amount       Decimal  @db.Decimal(10, 2)
+  paymentProof String?
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+  debt         debt     @relation(fields: [debtId], references: [id], map: "DebtPayment_debtId_fkey")
+  user         User     @relation(fields: [userId], references: [id], map: "DebtPayment_userId_fkey")
+
+  @@index([debtId], map: "DebtPayment_debtId_idx")
+  @@index([userId], map: "DebtPayment_userId_idx")
+}
+
+model order {
+  id               String              @id
+  orderNumber      String              @unique(map: "Order_orderNumber_key")
+  userId           String
+  shippingName     String
+  shippingAddress  String              @db.Text
+  shippingPhone    String
+  shippingCity     String
+  shippingProvince String
+  shippingPostal   String?
+  paymentMethod    order_paymentMethod
+  paymentStatus    order_paymentStatus @default(UNPAID)
+  paymentProof     String?
+  paidAmount       Decimal             @default(0.00) @db.Decimal(10, 2)
+  subtotal         Decimal             @db.Decimal(10, 2)
+  discount         Decimal             @default(0.00) @db.Decimal(10, 2)
+  total            Decimal             @db.Decimal(10, 2)
+  remainingDebt    Decimal             @default(0.00) @db.Decimal(10, 2)
+  promoId          String?
+  status           order_status        @default(PENDING_PAYMENT)
+  shippingMethod   String?
+  packingPhoto     String?
+  trackingNumber   String?
+  trackingPhoto    String?
+  shippedAt        DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime
+  promo            promo?              @relation(fields: [promoId], references: [id], map: "Order_promoId_fkey")
+  user             User                @relation(fields: [userId], references: [id], map: "Order_userId_fkey")
+  orderitem        orderitem[]
+
+  @@index([promoId], map: "Order_promoId_idx")
+  @@index([userId], map: "Order_userId_idx")
+}
+
+model orderitem {
+  id             String          @id
+  orderId        String
+  productId      String?
+  packageId      String?
+  quantity       Int
+  price          Decimal         @db.Decimal(10, 2)
+  order          order           @relation(fields: [orderId], references: [id], onDelete: Cascade, map: "OrderItem_orderId_fkey")
+  Renamedpackage Renamedpackage? @relation(fields: [packageId], references: [id], map: "OrderItem_packageId_fkey")
+  product        product?        @relation(fields: [productId], references: [id], map: "OrderItem_productId_fkey")
+
+  @@index([orderId], map: "OrderItem_orderId_idx")
+  @@index([packageId], map: "OrderItem_packageId_idx")
+  @@index([productId], map: "OrderItem_productId_idx")
+}
+
+/// This model has been renamed to 'Renamedpackage' during introspection, because the original name 'package' is reserved.
+model Renamedpackage {
+  id          String        @id
+  name        String
+  description String?       @db.Text
+  price       Decimal       @db.Decimal(10, 2)
+  image       String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  orderitem   orderitem[]
+  packageitem packageitem[]
+
+  @@map("package")
+}
+
+model packageitem {
+  id             String         @id
+  packageId      String
+  productId      String
+  quantity       Int
+  Renamedpackage Renamedpackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "PackageItem_packageId_fkey")
+  product        product        @relation(fields: [productId], references: [id], onDelete: Cascade, map: "PackageItem_productId_fkey")
+
+  @@index([packageId], map: "PackageItem_packageId_idx")
+  @@index([productId], map: "PackageItem_productId_idx")
+}
+
+model product {
+  id           String        @id
+  name         String
+  description  String?       @db.Text
+  price        Decimal       @db.Decimal(10, 2)
+  stock        Int           @default(0)
+  minStock     Int           @default(5)
+  image        String?
+  isBestseller Boolean       @default(false)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  orderitem    orderitem[]
+  packageitem  packageitem[]
+  stocklog     stocklog[]
+}
+
+model promo {
+  id            String    @id
+  code          String    @unique(map: "Promo_code_key")
+  discountType  String
+  discountValue Decimal   @db.Decimal(10, 2)
+  maxUsage      Int?
+  usedCount     Int       @default(0)
+  isActive      Boolean   @default(true)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  order         order[]
+}
+
+model stocklog {
+  id        String   @id
+  productId String
+  quantity  Int
+  type      String
+  reason    String
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  product   product  @relation(fields: [productId], references: [id], map: "StockLog_productId_fkey")
+
+  @@index([productId], map: "StockLog_productId_idx")
+}
+
+model User {
+  id            String        @id
+  email         String        @unique(map: "User_email_key")
+  password      String
+  name          String
+  role          user_role     @default(USER)
+  pesantrenName String?
+  address       String?       @db.Text
+  phone         String?
+  city          String?
+  province      String?
+  postalCode    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  addresses          Address[]
+  debt               debt[]
+  debtpayment        debtpayment[]
+  order              order[]
+  diklatregistration diklatregistration[]
+  
+  @@map("User")
+}
+
+enum user_role {
+  SUPERADMIN
+  USER
+}
+
+enum order_paymentMethod {
+  UTANG
+  SEBAGIAN
+  LUNAS
+}
+
+enum order_paymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+enum order_status {
+  PENDING_PAYMENT
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+
+model diklat {
+  id                 String               @id
+  title              String               @db.VarChar(255)
+  description        String?              @db.Text
+  location           String               @db.VarChar(255)
+  method             diklat_method        @default(OFFLINE)
+  registrationLink   String?              @db.VarChar(500)
+  image              String?              @db.VarChar(500)
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  diklatdate         diklatdate[]
+  diklatformfield    diklatformfield[]
+  diklatregistration diklatregistration[]
+}
+
+model diklatdate {
+  id        String   @id
+  diklatId  String
+  startDate DateTime
+  endDate   DateTime
+  diklat    diklat   @relation(fields: [diklatId], references: [id], onDelete: Cascade)
+
+  @@index([diklatId], map: "DiklatDate_diklatId_idx")
+}
+
+model diklatformfield {
+  id          String                    @id
+  diklatId    String
+  label       String                    @db.VarChar(255)
+  fieldType   diklatformfield_fieldType
+  options     String?                   @db.Text
+  isRequired  Boolean                   @default(false)
+  placeholder String?                   @db.VarChar(255)
+  order       Int                       @default(0)
+  diklat      diklat                    @relation(fields: [diklatId], references: [id], onDelete: Cascade)
+
+  @@index([diklatId], map: "DiklatFormField_diklatId_idx")
+}
+
+model diklatregistration {
+  id        String                      @id
+  diklatId  String
+  userId    String?
+  name      String                      @db.VarChar(255)
+  email     String                      @db.VarChar(255)
+  phone     String                      @db.VarChar(50)
+  formData  String                      @db.Text
+  status    diklatregistration_status   @default(PENDING)
+  createdAt DateTime                    @default(now())
+  diklat    diklat                      @relation(fields: [diklatId], references: [id], onDelete: Cascade)
+  user      User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([diklatId], map: "DiklatRegistration_diklatId_idx")
+  @@index([userId], map: "DiklatRegistration_userId_idx")
+}
+
+enum diklat_method {
+  ONLINE
+  OFFLINE
+  HYBRID
+}
+
+enum diklatformfield_fieldType {
+  TEXT
+  TEXTAREA
+  EMAIL
+  PHONE
+  NUMBER
+  DATE
+  SELECT
+  RADIO
+  CHECKBOX
+}
+
+enum diklatregistration_status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model agenda {
+  id            String        @id
+  title         String        @db.VarChar(255)
+  description   String?       @db.Text
+  eventType     agenda_eventType
+  pesantrenName String        @db.VarChar(255)
+  location      String        @db.VarChar(255)
+  eventDate     DateTime
+  image         String?       @db.VarChar(500)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+}
+
+enum agenda_eventType {
+  WISUDA
+  TEST_KELULUSAN
+  SEMINAR
+  WORKSHOP
+  LAINNYA
+}
+
+model partner {
+  id            String   @id
+  pesantrenName String   @db.VarChar(255)
+  city          String   @db.VarChar(255)
+  province      String   @db.VarChar(255)
+  logo          String?  @db.VarChar(500)
+  description   String?  @db.Text
+  joinedDate    DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+}

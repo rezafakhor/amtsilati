@@ -25,7 +25,7 @@ export default function Navbar() {
             />
             <div className="flex flex-col">
               <h1 className="text-lg md:text-2xl font-courgette text-white leading-tight" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>Pawedaran</h1>
-              <span className="text-[10px] md:text-sm text-accent font-courgette hidden sm:block">by Amtsilati Jabar 1</span>
+              <span className="text-[9px] md:text-sm text-accent font-courgette">by Amtsilati Jabar 1</span>
             </div>
           </Link>
           

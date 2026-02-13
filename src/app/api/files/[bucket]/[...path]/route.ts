@@ -41,3 +41,41 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { bucket: string; path: string[] } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    // Only authenticated users can delete files
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const bucket = params.bucket;
+    const filePath = params.path.join('/');
+
+    // Delete file from Supabase Storage
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Error deleting file:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'File deleted successfully' 
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete file" },
+      { status: 500 }
+    );
+  }
+}

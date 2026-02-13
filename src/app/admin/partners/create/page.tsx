@@ -22,20 +22,22 @@ export default function CreatePartnerPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", "product"); // Public image
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", file);
+    uploadFormData.append("type", "product"); // Public image
 
     try {
       const res = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
 
       if (res.ok) {
         const data = await res.json();
         setFormData(prev => ({ ...prev, logo: data.url }));
         showToast("Logo berhasil diupload", "success");
+        
+        // No need to delete old image on CREATE page
       }
     } catch (error) {
       showToast("Gagal upload logo", "error");

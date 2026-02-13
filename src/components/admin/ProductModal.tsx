@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Modal from "../Modal";
 import { Upload, Loader2 } from "lucide-react";
 import { useToastContext } from "@/contexts/ToastContext";
+import { deleteSupabaseFile } from "@/lib/supabase-helpers";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -65,6 +66,7 @@ export default function ProductModal({ isOpen, onClose, onSuccess, product }: Pr
 
     try {
       let imageUrl = formData.image;
+      const oldImageUrl = formData.image; // Store old image URL BEFORE any changes
 
       // Upload image if new file selected
       if (imageFile) {
@@ -103,6 +105,12 @@ export default function ProductModal({ isOpen, onClose, onSuccess, product }: Pr
       });
 
       if (res.ok) {
+        // Delete old image ONLY after successful save
+        // AND only when EDITING with new image uploaded
+        if (product && imageFile && oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.includes('supabase.co')) {
+          await deleteSupabaseFile(oldImageUrl);
+        }
+        
         onSuccess();
         onClose();
       } else {

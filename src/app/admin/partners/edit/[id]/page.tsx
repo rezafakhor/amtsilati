@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, Upload } from "lucide-react";
 import { useToastContext } from "@/contexts/ToastContext";
+import { deleteSupabaseFile } from "@/lib/supabase-helpers";
 
 export default function EditPartnerPage() {
   const router = useRouter();
@@ -49,20 +50,28 @@ export default function EditPartnerPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", "product"); // Public image
+    const oldLogoUrl = formData.logo; // Store old logo URL BEFORE upload
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", file);
+    uploadFormData.append("type", "product"); // Public image
 
     try {
       const res = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
 
       if (res.ok) {
         const data = await res.json();
-        setFormData(prev => ({ ...prev, logo: data.url }));
+        const newLogoUrl = data.url;
+        
+        setFormData(prev => ({ ...prev, logo: newLogoUrl }));
         showToast("Logo berhasil diupload", "success");
+
+        // Delete old logo ONLY if it's different and from Supabase
+        if (oldLogoUrl && oldLogoUrl !== newLogoUrl && oldLogoUrl.includes('supabase.co')) {
+          await deleteSupabaseFile(oldLogoUrl);
+        }
       }
     } catch (error) {
       showToast("Gagal upload logo", "error");

@@ -41,14 +41,14 @@ export default function DashboardGreeting({ dateString }: DashboardGreetingProps
       <div className="relative flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
         {/* Left: Greeting Text */}
         <div className="flex-1 text-center md:text-left">
-          <p className="text-white/70 text-sm font-medium mb-3">
+          <p className="text-white/70 text-xs md:text-sm font-medium mb-2 md:mb-3 line-clamp-1">
             {dateString}
           </p>
-          <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-tight">
+          <h1 className="text-white text-xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-tight">
             {greeting}, Superadmin!
           </h1>
-          <p className="text-white/80 text-sm md:text-base leading-relaxed">
-            Pantau performa sistem, statistik keuangan, dan aktivitas user hari ini.
+          <p className="text-white/80 text-xs md:text-base leading-relaxed">
+            Pantau performa sistem, statistik keuangan,<br className="hidden md:inline" /> dan aktivitas user hari ini.
           </p>
         </div>
         

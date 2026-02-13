@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload } from "lucide-react";
 import { useToastContext } from "@/contexts/ToastContext";
+import { deleteSupabaseFile } from "@/lib/supabase-helpers";
 
 export default function EditAgendaPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -55,6 +56,7 @@ export default function EditAgendaPage({ params }: { params: { id: string } }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const oldImageUrl = formData.image; // Store old image URL BEFORE upload
     const formDataUpload = new FormData();
     formDataUpload.append("file", file);
     formDataUpload.append("type", "product"); // Public image
@@ -67,8 +69,15 @@ export default function EditAgendaPage({ params }: { params: { id: string } }) {
 
       if (res.ok) {
         const data = await res.json();
-        setFormData(prev => ({ ...prev, image: data.url }));
+        const newImageUrl = data.url;
+        
+        setFormData(prev => ({ ...prev, image: newImageUrl }));
         showToast("Gambar berhasil diupload", "success");
+
+        // Delete old image ONLY if it's different and from Supabase
+        if (oldImageUrl && oldImageUrl !== newImageUrl && oldImageUrl.includes('supabase.co')) {
+          await deleteSupabaseFile(oldImageUrl);
+        }
       }
     } catch (error) {
       showToast("Gagal upload gambar", "error");

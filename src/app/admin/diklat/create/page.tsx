@@ -170,6 +170,8 @@ export default function CreateDiklatPage() {
 
         const uploadData = await uploadRes.json();
         imageUrl = uploadData.url;
+        
+        // No need to delete old image on CREATE page
       }
 
       const res = await fetch("/api/diklat", {

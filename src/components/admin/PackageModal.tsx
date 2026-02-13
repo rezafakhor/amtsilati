@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Trash2, Upload } from "lucide-react";
 import { useToastContext } from "@/contexts/ToastContext";
+import { deleteSupabaseFile } from "@/lib/supabase-helpers";
 
 interface Product {
   id: string;
@@ -94,14 +95,16 @@ export default function PackageModal({ isOpen, onClose, onSuccess, packageData }
     if (!file) return;
 
     setUploading(true);
+    const oldImageUrl = formData.image; // Store old image URL BEFORE upload
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("type", "product"); // Package images are public
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("type", "product"); // Package images are public
 
       const res = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
 
       if (!res.ok) {
@@ -111,8 +114,18 @@ export default function PackageModal({ isOpen, onClose, onSuccess, packageData }
       }
 
       const data = await res.json();
-      setFormData(prev => ({ ...prev, image: data.url }));
+      const newImageUrl = data.url;
+      
+      setFormData(prev => ({ ...prev, image: newImageUrl }));
       showToast("Gambar berhasil diupload", "success");
+
+      // Delete old image ONLY when:
+      // 1. EDITING (packageData exists)
+      // 2. Old image exists and is different from new image
+      // 3. Old image is from Supabase
+      if (packageData && oldImageUrl && oldImageUrl !== newImageUrl && oldImageUrl.includes('supabase.co')) {
+        await deleteSupabaseFile(oldImageUrl);
+      }
     } catch (error) {
       console.error("Upload error:", error);
       showToast("Terjadi kesalahan saat upload", "error");

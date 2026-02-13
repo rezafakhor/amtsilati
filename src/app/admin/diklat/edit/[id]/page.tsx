@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Upload } from "lucide-react";
 import { useToastContext } from "@/contexts/ToastContext";
+import { deleteSupabaseFile } from "@/lib/supabase-helpers";
 
 interface DateRange {
   startDate: string;
@@ -193,6 +194,7 @@ export default function EditDiklatPage() {
     setLoading(true);
     try {
       let imageUrl = formData.image;
+      const oldImageUrl = formData.image; // Store old image URL BEFORE upload
 
       if (imageFile) {
         const uploadFormData = new FormData();
@@ -212,6 +214,11 @@ export default function EditDiklatPage() {
 
         const uploadData = await uploadRes.json();
         imageUrl = uploadData.url;
+
+        // Delete old image ONLY if it's different and from Supabase
+        if (oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.includes('supabase.co')) {
+          await deleteSupabaseFile(oldImageUrl);
+        }
       }
 
       const res = await fetch(`/api/diklat/${params.id}`, {

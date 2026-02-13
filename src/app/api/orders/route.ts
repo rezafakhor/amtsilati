@@ -49,7 +49,7 @@ export async function GET(request: Request) {
             }
 
             if (item.packageId) {
-              const pkg = await prisma.Renamedpackage.findUnique({
+              const pkg = await prisma.renamedpackage.findUnique({
                 where: { id: item.packageId },
                 select: { name: true }
               });

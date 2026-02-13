@@ -99,7 +99,7 @@ model orderitem {
   quantity       Int
   price          Decimal         @db.Decimal(10, 2)
   order          order           @relation(fields: [orderId], references: [id], onDelete: Cascade, map: "OrderItem_orderId_fkey")
-  Renamedpackage Renamedpackage? @relation(fields: [packageId], references: [id], map: "OrderItem_packageId_fkey")
+  Renamedpackage renamedpackage? @relation(fields: [packageId], references: [id], map: "OrderItem_packageId_fkey")
   product        product?        @relation(fields: [productId], references: [id], map: "OrderItem_productId_fkey")
 
   @@index([orderId], map: "OrderItem_orderId_idx")
@@ -107,8 +107,8 @@ model orderitem {
   @@index([productId], map: "OrderItem_productId_idx")
 }
 
-/// This model has been renamed to 'Renamedpackage' during introspection, because the original name 'package' is reserved.
-model Renamedpackage {
+/// This model has been renamed to 'renamedpackage' during introspection, because the original name 'package' is reserved.
+model renamedpackage {
   id          String        @id
   name        String
   description String?       @db.Text
@@ -128,7 +128,7 @@ model packageitem {
   packageId      String
   productId      String
   quantity       Int
-  Renamedpackage Renamedpackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "PackageItem_packageId_fkey")
+  Renamedpackage renamedpackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "PackageItem_packageId_fkey")
   product        product        @relation(fields: [productId], references: [id], onDelete: Cascade, map: "PackageItem_productId_fkey")
 
   @@index([packageId], map: "PackageItem_packageId_idx")

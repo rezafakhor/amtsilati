@@ -195,7 +195,7 @@ export default function PaketPage() {
         title="Hapus Paket"
         message="Apakah Anda yakin ingin menghapus paket ini?"
         onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
+        onClose={() => setDeleteId(null)}
       />
     </div>
   );

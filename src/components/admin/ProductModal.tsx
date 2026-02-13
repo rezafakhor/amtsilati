@@ -76,10 +76,14 @@ export default function ProductModal({ isOpen, onClose, onSuccess, product }: Pr
           body: uploadFormData,
         });
 
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          imageUrl = uploadData.url;
+        if (!uploadRes.ok) {
+          showToast("Gagal upload gambar", "error");
+          setLoading(false);
+          return;
         }
+
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url;
       }
 
       const url = product ? `/api/products/${product.id}` : "/api/products";

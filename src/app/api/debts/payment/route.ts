@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     }
 
     // Create payment record
-    const payment = await prisma.debtPayment.create({
+    const payment = await prisma.debtpayment.create({
       data: {
         debtId,
         userId: debt.userId,

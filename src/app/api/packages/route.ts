@@ -56,6 +56,8 @@ export async function POST(request: Request) {
         price: Number(body.price),
         image: body.image || null,
         isActive: body.isActive !== false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       include: {
         packageitem: {

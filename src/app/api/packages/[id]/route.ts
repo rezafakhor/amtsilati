@@ -72,6 +72,7 @@ export async function PUT(
         price: Number(body.price),
         image: body.image || null,
         isActive: body.isActive !== undefined ? body.isActive : true,
+        updatedAt: new Date(),
       },
       include: {
         packageitem: {

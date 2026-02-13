@@ -19,7 +19,7 @@ export async function PUT(
     const { label, recipientName, pesantrenName, phone, address, city, province, postalCode, isDefault } = body;
 
     // Check if address belongs to user
-    const existingAddress = await prisma.Address.findFirst({
+    const existingAddress = await prisma.address.findFirst({
       where: {
         id: params.id,
         userId: session.user.id
@@ -32,7 +32,7 @@ export async function PUT(
 
     // If setting as default, unset other defaults
     if (isDefault) {
-      await prisma.Address.updateMany({
+      await prisma.address.updateMany({
         where: { 
           userId: session.user.id,
           isDefault: true,
@@ -42,7 +42,7 @@ export async function PUT(
       });
     }
 
-    const updatedAddress = await prisma.Address.update({
+    const updatedAddress = await prisma.address.update({
       where: { id: params.id },
       data: {
         label,
@@ -78,7 +78,7 @@ export async function DELETE(
     }
 
     // Check if address belongs to user
-    const existingAddress = await prisma.Address.findFirst({
+    const existingAddress = await prisma.address.findFirst({
       where: {
         id: params.id,
         userId: session.user.id
@@ -89,7 +89,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Address not found" }, { status: 404 });
     }
 
-    await prisma.Address.delete({
+    await prisma.address.delete({
       where: { id: params.id }
     });
 

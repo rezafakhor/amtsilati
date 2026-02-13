@@ -70,6 +70,7 @@ export default function ProductModal({ isOpen, onClose, onSuccess, product }: Pr
       if (imageFile) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", imageFile);
+        uploadFormData.append("type", "product"); // Specify type
 
         const uploadRes = await fetch("/api/upload", {
           method: "POST",

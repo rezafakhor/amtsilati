@@ -57,6 +57,7 @@ export default function EditAgendaPage({ params }: { params: { id: string } }) {
 
     const formDataUpload = new FormData();
     formDataUpload.append("file", file);
+    formDataUpload.append("type", "product"); // Public image
 
     try {
       const res = await fetch("/api/upload", {

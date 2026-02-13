@@ -97,19 +97,22 @@ export default function PackageModal({ isOpen, onClose, onSuccess, packageData }
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("type", "product"); // Package images are public
 
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      const data = await res.json();
-      if (data.success) {
-        setFormData(prev => ({ ...prev, image: data.url }));
-        showToast("Gambar berhasil diupload", "success");
-      } else {
+      if (!res.ok) {
         showToast("Gagal upload gambar", "error");
+        setUploading(false);
+        return;
       }
+
+      const data = await res.json();
+      setFormData(prev => ({ ...prev, image: data.url }));
+      showToast("Gambar berhasil diupload", "success");
     } catch (error) {
       console.error("Upload error:", error);
       showToast("Terjadi kesalahan saat upload", "error");

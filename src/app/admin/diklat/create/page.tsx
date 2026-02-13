@@ -155,16 +155,21 @@ export default function CreateDiklatPage() {
       if (imageFile) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", imageFile);
+        uploadFormData.append("type", "product"); // Public image
 
         const uploadRes = await fetch("/api/upload", {
           method: "POST",
           body: uploadFormData
         });
 
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          imageUrl = uploadData.url;
+        if (!uploadRes.ok) {
+          showToast("Gagal upload gambar", "error");
+          setLoading(false);
+          return;
         }
+
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url;
       }
 
       const res = await fetch("/api/diklat", {

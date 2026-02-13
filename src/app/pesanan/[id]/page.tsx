@@ -88,23 +88,25 @@ export default function OrderDetailPage() {
     try {
       const formData = new FormData();
       formData.append("file", paymentProof);
+      formData.append("type", "payment"); // Private file
       
       const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: formData
       });
       
-      const uploadData = await uploadRes.json();
-      if (!uploadData.success) {
+      if (!uploadRes.ok) {
         showToast("Gagal upload file", "error");
         setUploading(false);
         return;
       }
 
+      const uploadData = await uploadRes.json();
+
       const res = await fetch(`/api/orders/${order.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentProof: uploadData.url })
+        body: JSON.stringify({ paymentProof: uploadData.path }) // Use path for private files
       });
 
       if (res.ok) {

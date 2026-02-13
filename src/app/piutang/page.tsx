@@ -72,16 +72,21 @@ export default function PiutangPage() {
       if (paymentProof) {
         const formData = new FormData();
         formData.append("file", paymentProof);
+        formData.append("type", "payment"); // Private file
         
         const uploadRes = await fetch("/api/upload", {
           method: "POST",
           body: formData
         });
         
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          paymentProofUrl = uploadData.url;
+        if (!uploadRes.ok) {
+          showToast("Gagal upload bukti transfer", "error");
+          setLoading(false);
+          return;
         }
+
+        const uploadData = await uploadRes.json();
+        paymentProofUrl = uploadData.path; // Use path for private files
       }
 
       const res = await fetch("/api/debts/payment", {

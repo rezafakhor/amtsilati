@@ -75,9 +75,10 @@ export default function OrderDetailModal({ isOpen, onClose, orderId, onSuccess }
     }
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (file: File, type: 'payment' | 'shipping'): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("type", type); // Private file
 
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -89,7 +90,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderId, onSuccess }
     }
 
     const data = await res.json();
-    return data.url;
+    return data.path; // Return path for private files
   };
 
   const handleVerifyPayment = async (approve: boolean) => {
@@ -129,7 +130,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderId, onSuccess }
 
     setUploading(true);
     try {
-      const photoUrl = await uploadFile(packingPhotoFile);
+      const photoUrl = await uploadFile(packingPhotoFile, 'shipping');
       
       const res = await fetch(`/api/orders/${orderId}`, {
         method: "PUT",
@@ -173,7 +174,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderId, onSuccess }
       
       // Upload tracking photo if exists (only for EKSPEDISI)
       if (trackingPhotoFile && shippingMethod === "EKSPEDISI") {
-        trackingPhotoUrl = await uploadFile(trackingPhotoFile);
+        trackingPhotoUrl = await uploadFile(trackingPhotoFile, 'shipping');
       }
 
       const res = await fetch(`/api/orders/${orderId}`, {

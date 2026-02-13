@@ -25,6 +25,7 @@ export default function CreateAgendaPage() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("type", "product"); // Public image
 
     try {
       const res = await fetch("/api/upload", {

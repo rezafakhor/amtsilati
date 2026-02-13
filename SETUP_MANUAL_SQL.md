@@ -49,27 +49,27 @@ File `schema.sql` akan dibuat di root project.
 
 ## Langkah 5: Seed Data (Manual via SQL)
 
-Copy dan jalankan SQL ini di SQL Editor untuk membuat admin user:
+Copy dan jalankan SQL ini di SQL Editor untuk membuat admin dan user:
 
 ```sql
--- Create admin user
+-- Insert Admin User
 INSERT INTO "User" (id, email, password, name, role, "createdAt", "updatedAt")
 VALUES (
-  'admin_' || floor(random() * 1000000000)::text,
+  'admin_1770966710607',
   'admin@pawedaran.com',
-  '$2b$10$YourHashedPasswordHere',  -- Ganti dengan hash password
+  '$2a$10$i44xdB3Y76XklP7z/Vr/IetqyCVjQF7Gut/zrgLlQ5dtxcrv5s7p6',
   'Super Admin',
   'SUPERADMIN',
   NOW(),
   NOW()
 );
 
--- Create sample user
+-- Insert Sample User
 INSERT INTO "User" (id, email, password, name, role, "pesantrenName", "createdAt", "updatedAt")
 VALUES (
-  'user_' || floor(random() * 1000000000)::text,
+  'user_1770966710607',
   'pesantren@example.com',
-  '$2b$10$YourHashedPasswordHere',  -- Ganti dengan hash password
+  '$2a$10$fOeUVvtkqwfygEFlI5ri1uT9QfKSEN4XchIxAM4WSHoZ7Fcszdu0u',
   'Pesantren Al-Hikmah',
   'USER',
   'Pesantren Al-Hikmah',
@@ -78,13 +78,9 @@ VALUES (
 );
 ```
 
-**PENTING**: Untuk hash password, jalankan di terminal lokal:
-
-```bash
-node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('admin123', 10));"
-```
-
-Copy hasil hash dan ganti `$2b$10$YourHashedPasswordHere` dengan hash tersebut.
+**Login Credentials:**
+- Admin: `admin@pawedaran.com` / `admin123`
+- User: `pesantren@example.com` / `user123`
 
 ## Langkah 6: Test Connection dari Lokal
 

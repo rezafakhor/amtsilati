@@ -222,7 +222,7 @@ export default function ProdukPage() {
                 <Plus className="w-8 h-8 text-[#6a6a6a]" />
               </div>
               <p className="text-sm">Belum ada produk</p>
-              <p className="text-xs mt-1">Klik tombol "Tambah Produk" untuk memulai</p>
+              <p className="text-xs mt-1">Klik tombol &quot;Tambah Produk&quot; untuk memulai</p>
             </div>
           )}
         </div>

@@ -130,7 +130,7 @@ export default function PromoPage() {
                 <Tag className="w-8 h-8 text-[#6a6a6a]" />
               </div>
               <p className="text-sm">Belum ada promo</p>
-              <p className="text-xs mt-1">Klik tombol "Tambah Promo" untuk memulai</p>
+              <p className="text-xs mt-1">Klik tombol &quot;Tambah Promo&quot; untuk memulai</p>
             </div>
           )}
         </div>

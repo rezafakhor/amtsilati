@@ -140,7 +140,7 @@ export default function PartnersPage() {
             <Building2 className="w-8 h-8 text-[#6a6a6a]" />
           </div>
           <p className="text-sm">Belum ada mitra pesantren</p>
-          <p className="text-xs mt-1">Klik tombol "Tambah Mitra" untuk memulai</p>
+          <p className="text-xs mt-1">Klik tombol &quot;Tambah Mitra&quot; untuk memulai</p>
         </div>
       )}
 

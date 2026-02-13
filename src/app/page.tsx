@@ -135,7 +135,7 @@ export default function HomePage() {
           {/* Badge */}
           <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-accent/30 to-accent/20 backdrop-blur-sm border-2 border-accent px-4 md:px-5 py-2 rounded-full text-accent text-xs md:text-sm font-semibold shadow-xl">
             <Star className="w-4 h-4 md:w-5 md:h-5" />
-            <span className="tracking-wide">Metode Praktis Mendalami Al-Qur'an</span>
+            <span className="tracking-wide">Metode Praktis Mendalami Al-Qur&apos;an</span>
           </div>
 
           {/* 3D Logos - Static Elegant Style (Amtsilati first, then Pawedaran) */}

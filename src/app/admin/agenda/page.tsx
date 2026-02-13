@@ -168,7 +168,7 @@ export default function AgendaPage() {
                 <Calendar className="w-8 h-8 text-[#6a6a6a]" />
               </div>
               <p className="text-sm">Belum ada agenda</p>
-              <p className="text-xs mt-1">Klik tombol "Tambah Agenda" untuk memulai</p>
+              <p className="text-xs mt-1">Klik tombol &quot;Tambah Agenda&quot; untuk memulai</p>
             </div>
           )}
         </div>

@@ -176,7 +176,7 @@ export default function PaketPage() {
                 <Plus className="w-8 h-8 text-[#6a6a6a]" />
               </div>
               <p className="text-sm">Belum ada paket</p>
-              <p className="text-xs mt-1">Klik tombol "Tambah Paket" untuk memulai</p>
+              <p className="text-xs mt-1">Klik tombol &quot;Tambah Paket&quot; untuk memulai</p>
             </div>
           )}
         </div>

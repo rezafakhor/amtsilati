@@ -24,6 +24,7 @@ interface Diklat {
   method: string;
   registrationLink: string;
   image: string;
+  isActive: boolean;
   diklatdate: Array<{
     startDate: string;
     endDate: string;

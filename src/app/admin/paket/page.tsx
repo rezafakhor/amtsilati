@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/useToast";
 interface Package {
   id: string;
   name: string;
+  description: string;
   price: number;
   image: string | null;
   isActive: boolean;

@@ -13,9 +13,9 @@ export async function GET(request: Request) {
 
     // Get query parameters
     const { searchParams } = new URL(request.url);
-    const statusFilter = searchParams.get('status');
+    const statusFilter = searchParams.get('status') as any;
 
-    const where = session.user.role === "SUPERADMIN" 
+    const where: any = session.user.role === "SUPERADMIN" 
       ? (statusFilter ? { status: statusFilter } : {})
       : (statusFilter ? { userId: session.user.id, status: statusFilter } : { userId: session.user.id });
 

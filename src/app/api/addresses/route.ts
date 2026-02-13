@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const addresses = await prisma.Address.findMany({
+    const addresses = await prisma.address.findMany({
       where: { userId: session.user.id },
       orderBy: [
         { isDefault: 'desc' },
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     // If setting as default, unset other defaults
     if (isDefault) {
       console.log("Unsetting other default addresses...");
-      await prisma.Address.updateMany({
+      await prisma.address.updateMany({
         where: { 
           userId: session.user.id,
           isDefault: true
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     console.log("Generated ID:", addressId);
 
     console.log("Creating address in database...");
-    const newAddress = await prisma.Address.create({
+    const newAddress = await prisma.address.create({
       data: {
         id: addressId,
         userId: session.user.id,

@@ -20,8 +20,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
+    const id = `PRD${Date.now()}`;
     const product = await prisma.product.create({
       data: {
+        id,
         name: body.name,
         description: body.description,
         price: body.price,
@@ -30,6 +32,8 @@ export async function POST(request: Request) {
         image: body.image,
         isBestseller: body.isBestseller || false,
         isActive: body.isActive !== false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
     });
     

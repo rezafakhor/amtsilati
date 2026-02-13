@@ -52,6 +52,7 @@ export async function PUT(
         image: body.image,
         isBestseller: body.isBestseller,
         isActive: body.isActive,
+        updatedAt: new Date(),
       }
     });
     

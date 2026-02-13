@@ -51,6 +51,7 @@ export async function POST(request: Request) {
         registrationLink: body.registrationLink,
         image: body.image,
         isActive: body.isActive ?? true,
+        createdAt: new Date(),
         updatedAt: new Date(),
         diklatdate: {
           create: body.dates.map((date: any) => ({

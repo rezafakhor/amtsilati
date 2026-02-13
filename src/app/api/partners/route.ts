@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
         logo,
         description,
         joinedDate: new Date(joinedDate),
+        createdAt: new Date(),
         updatedAt: new Date()
       }
     });

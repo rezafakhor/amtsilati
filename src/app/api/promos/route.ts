@@ -28,8 +28,10 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     
+    const id = `PROMO${Date.now()}`;
     const promo = await prisma.promo.create({
       data: {
+        id,
         code: body.code.toUpperCase(),
         discountType: body.discountType,
         discountValue: body.discountValue,
@@ -37,6 +39,8 @@ export async function POST(request: Request) {
         isActive: body.isActive !== false,
         validFrom: body.validFrom ? new Date(body.validFrom) : null,
         validUntil: body.validUntil ? new Date(body.validUntil) : null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
     });
     

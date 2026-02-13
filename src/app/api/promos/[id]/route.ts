@@ -26,6 +26,7 @@ export async function PUT(
         isActive: body.isActive,
         validFrom: body.validFrom ? new Date(body.validFrom) : null,
         validUntil: body.validUntil ? new Date(body.validUntil) : null,
+        updatedAt: new Date(),
       }
     });
     

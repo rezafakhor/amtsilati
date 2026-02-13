@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
         location,
         eventDate: new Date(eventDate),
         image,
+        createdAt: new Date(),
         updatedAt: new Date()
       }
     });
